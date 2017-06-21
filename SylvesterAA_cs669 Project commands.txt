@@ -1,0 +1,439 @@
+
+CS669 DATABASE PROJECT(Microsoft SQL Server Management Studio, IntelliSense Enabled : Ctrl+Q , Ctrl+I )
+
+
+
+CREATE TABLE Membership (membership_id DECIMAL(12) PRIMARY KEY,
+	plan_name VARCHAR (60) NOT NULL,
+	plan_description VARCHAR (60) NOT NULL,
+	plan_price DECIMAL (8,2) NOT NULL
+	);
+
+CREATE TABLE Customer(customer_id DECIMAL(12) PRIMARY KEY,
+	membership_id DECIMAL(12)NOT NULL,
+	mem_status VARCHAR (20) NOT NULL,
+	customer_Fname VARCHAR (80)NOT NULL,
+	customer_Lname VARCHAR (80) NOT NULL,
+	customer_address VARCHAR (80) NOT NULL,
+	customer_city VARCHAR (80) NOT NULL,
+	customer_state VARCHAR (20) NOT NULL,
+	mem_start_date Date NOT NULL,
+	mem_end_date DATE NOT NULL
+	);
+
+
+
+CREATE TABLE Director (director_id DECIMAL (12) PRIMARY KEY,
+	director_name VARCHAR (255) NOT NULL,
+	);
+
+CREATE TABLE Genre (genre_id DECIMAL (12) PRIMARY KEY,
+		genre_type VARCHAR(80) NOT NULL
+		);
+
+CREATE TABLE Movie (
+    movie_id DECIMAL (12) PRIMARY KEY,
+	director_id DECIMAL(12) NOT NULL,
+	genre_id DECIMAL (12) NOT NULL,
+	movie_name VARCHAR(255) NOT NULL,
+	movie_year DECIMAL (4) NOT NULL,
+	number_in_stock DECIMAL (12) NOT NULL
+	);
+
+CREATE TABLE Queue(queue_id DECIMAL (12)PRIMARY KEY,
+	customer_id DECIMAL (12) NOT NULL,
+	movie_id DECIMAL (12) NOT NULL
+	);
+
+CREATE TABLE Invoice(invoice_id DECIMAL(12) PRIMARY KEY,
+	customer_id DECIMAL (12) NOT NULL,
+	payment_due_date DATE,
+	monthly_Amount DECIMAL (8,2),
+	missing_movie_fee DECIMAL(8,2)NULL
+	);
+
+CREATE TABLE Account (account_id DECIMAL (12)PRIMARY KEY,
+	customer_id DECIMAL (12) NOT NULL,
+	invoice_id DECIMAL (12) NOT NULL,
+	payment_date DATE );
+
+CREATE TABLE Rent_Record (Rent_Rec_id DECIMAL(12) PRIMARY KEY,
+	customer_id DECIMAL (12) NOT NULL,
+	movie_id DECIMAL (12) NOT NULL,
+	return_date DATE NULL
+	);
+
+CREATE TABLE Mail (mail_id DECIMAL(12) PRIMARY KEY,
+	customer_id DECIMAL (12) NOT NULL,
+	queue_id DECIMAL(12) NOT NULL,
+	mailed_date DATE,
+	mail_arrived_date DATE
+	);
+
+
+ALTER TABLE Customer
+ADD CONSTRAINT Customer_membership_fk
+FOREIGN KEY (membership_id)
+REFERENCES Membership (membership_id);
+
+
+ALTER TABLE Invoice
+ADD CONSTRAINT Invoice_Customer_fk
+FOREIGN KEY (customer_id)
+REFERENCES Customer(customer_id);
+
+
+ALTER TABLE Mail
+ADD FOREIGN KEY(customer_id) REFERENCES Customer (customer_id);
+ALTER TABLE Mail
+ADD FOREIGN KEY (queue_id)REFERENCES Queue (queue_id);
+
+
+ALTER TABLE Queue
+ADD FOREIGN KEY (movie_id) REFERENCES Movie (movie_id);
+ALTER TABLE Queue
+ADD FOREIGN KEY (customer_id) REFERENCES Customer (customer_id);
+
+ALTER TABLE Rent_Record
+ADD FOREIGN KEY (customer_id) REFERENCES Customer(customer_id);
+ALTER TABLE Rent_Record
+ADD FOREIGN KEY (movie_id) REFERENCES Movie (movie_id);
+
+ALTER TABLE Movie
+ADD FOREIGN KEY (director_id) REFERENCES Director (director_id);
+ALTER TABLE Movie
+ADD FOREIGN KEY (genre_id) REFERENCES Genre(genre_id);
+
+ALTER TABLE Account
+ADD FOREIGN KEY (customer_id) REFERENCES Customer (customer_id);
+ALTER TABLE Account
+ADD FOREIGN KEY (invoice_id) REFERENCES Invoice (invoice_id);
+
+
+--Membership table data
+
+INSERT INTO Membership VALUES (1, '3-at-a-time', 'unlimited monthly movies but 3 movies at time' , 17.99);
+INSERT INTO Membership VALUES (2, '2-at-a-time', '4 movies per month', 11.9);
+
+
+
+--Customer table 
+
+INSERT INTO Customer VALUES (330001, 1,'Not Active', 'Tremont', 'Kantanka', '5 Elm St', 'Braintree', 'MA 02214', CAST('14-JUNE-2003' AS DATE), CAST('13-MAY-2016' AS DATE) );
+INSERT INTO Customer VALUES (330002, 2,'Active', 'Esther', 'Roodney', '34 Rhode Ave', 'Bronx', 'NY 65214', CAST('11-MAY-2009' AS DATE), ' ');
+INSERT INTO Customer VALUES (330003, 2, 'Active', 'Golda', 'Tarkoh', '58 Wright St', 'Boston', 'MA 02033', CAST('05-JULY-2008' AS DATE), ' ');
+INSERT INTO Customer VALUES (330004, 2, 'Not Active', 'Kwame', 'Amo', '21 Peackock Court', 'Irvington', 'NJ 03221', CAST('14-FEBRUARY-2003' AS DATE), CAST('20-FEBRUARY-2012' AS DATE));
+INSERT INTO Customer VALUES (330005, 1, 'Active', 'Ama', 'Pokuaa', '6 St Turker St','Somerville', 'MA 03427', CAST('20-MARCH-2016' AS DATE), ' ');
+INSERT INTO Customer VALUES (330006, 2, 'Active', 'Luke', 'Nsia', '42 Grimms St', 'Quincy', 'MA 02534', CAST('04-JANUARY-2015' AS DATE), ' ');
+INSERT INTO Customer VALUES (330007, 1, 'Not Active', 'Emma', 'Kusi', '90 Queens Ave', 'Cincinati', 'OH 54221', CAST('08-OCTOBER-2010' AS DATE), CAST('23-JUNE-2015' AS DATE));
+INSERT INTO Customer VALUES (330008, 2, 'Active', 'Alex', 'Tawia', '60 Washingting St','Chamford', 'CA 42214', CAST('14-APRIL-2016' AS DATE), '');
+
+
+
+--Director table data
+
+INSERT INTO Director VALUES (2101, 'Rich Christiano');
+INSERT INTO Director VALUES (2102, 'George Lucas');
+INSERT INTO Director VALUES (2103, 'Mike Schmith');
+INSERT INTO Director VALUES (2104, 'Ruth Sakyi');
+INSERT INTO Director VALUES (2105, 'Gregg Torci');
+
+
+
+-- Genre table 
+
+INSERT INTO Genre VALUES (501, 'Thriller');
+INSERT INTO Genre VALUES (502, 'Sci-fi');
+INSERT INTO Genre VALUES (503, 'Comedy');
+INSERT INTO Genre VALUES (504, 'Drama');
+INSERT INTO Genre VALUES (505, 'Miscellaneous');
+INSERT INTO Genre VALUES (506, 'Adventure');
+
+
+--Movie table data
+
+INSERT INTO Movie VALUES (1001, 2102, 506, 'Jungle book', 2016, 1000);
+INSERT INTO Movie VALUES (1002, 2101, 503, 'Mr Bean', 1989, 100);
+INSERT INTO Movie VALUES (1003, 2102, 506, 'Animal kingdom', 2014, 180);
+INSERT INTO Movie VALUES (1004, 2103, 504, 'Kumkum Bagyia', 2001, 1200);
+INSERT INTO Movie VALUES (1005, 2102, 502, 'Vanilla', 2011, 1070);
+INSERT INTO Movie VALUES (1006, 2104, 501, 'Stranger Things', 2016, 1350);
+INSERT INTO Movie VALUES (1007, 2105, 503, 'Johnny English', 2010, 1300);
+INSERT INTO Movie VALUES (1008, 2103, 504, 'Hamlet', 1985, 1020);
+
+
+-- Queue table data
+
+INSERT INTO Queue VALUES (901,330001, 1001);
+INSERT INTO Queue VALUES (902,330002, 1003);
+INSERT INTO Queue VALUES (903,330003, 1002);
+INSERT INTO Queue VALUES (904,330004, 1005);
+INSERT INTO Queue VALUES (905,330005, 1004);
+INSERT INTO Queue VALUES (906,330006, 1002);
+INSERT INTO Queue VALUES (907,330007, 1001);
+
+
+-- Invoice table data
+
+INSERT INTO Invoice VALUES (6101, 330008, CAST('14-APRIL-2016' AS DATE), 11.9, 0 );
+INSERT INTO Invoice VALUES (6102, 330004, CAST('14-FEBRUARY-2012' AS DATE), 17.9, 0 );
+INSERT INTO Invoice VALUES (6103, 330002, CAST('14-July-2016' AS DATE), 17.9, 0 );
+INSERT INTO Invoice VALUES (6104, 330005, CAST('20-MARCH-2016' AS DATE), 11.9, 0 );
+INSERT INTO Invoice VALUES (6105, 330006, CAST('04-JANUARY-2015' AS DATE), 17.9, 0 );
+INSERT INTO Invoice VALUES (6106, 330003, CAST('05-JULY-2008' AS DATE), 17.9, 0);
+INSERT INTO Invoice VALUES (6107, 330001, CAST('14-JUNE-2003' AS DATE), 17.9, 0 );
+
+
+--Account table data
+
+INSERT INTO Account VALUES (9011, 330008, 6101, CAST('14-APRIL-2016' AS DATE));
+INSERT INTO Account VALUES (9012, 330004, 6102, CAST('14-FEBRUARY-2012' AS DATE));
+INSERT INTO Account VALUES (9013, 330002, 6103, CAST('14-July-2016' AS DATE));
+
+
+--Rent_Record
+
+
+INSERT INTO Rent_Record VALUES(7001,330002, 1001, CAST('24-July-2016' AS DATE));
+INSERT INTO Rent_Record VALUES(7002,330001, 1003, CAST('30-JUNE-2003' AS DATE));
+INSERT INTO Rent_Record VALUES(7003,330002, 1002, CAST('13-MAY-2003' AS DATE));
+INSERT INTO Rent_Record VALUES(7004,330004, 1005, CAST('22-FEBRUARY-2012' AS DATE));
+INSERT INTO Rent_Record VALUES(7005,330002, 1004, CAST('2-August-2016' AS DATE));
+INSERT INTO Rent_Record VALUES(7006,330006, 1002, CAST('27-Dec-2016' AS DATE));
+INSERT INTO Rent_Record VALUES(7007,330008, 1001, CAST('28-April-2016' AS DATE));
+INSERT INTO Rent_Record VALUES(7008,330001, 1005, CAST('29-July-2016' AS DATE));
+INSERT INTO Rent_Record VALUES(7009,330003, 1004, CAST('5-August-2016' AS DATE));
+INSERT INTO Rent_Record VALUES(7010,330003, 1005, CAST('8-August-2016' AS DATE));
+INSERT INTO Rent_Record VALUES(7011,330003, 1001, CAST('5-August-2016' AS DATE));
+INSERT INTO Rent_Record VALUES(7012,330008, 1001, CAST('28-July-2016' AS DATE));
+
+
+
+
+--Mail table data
+
+INSERT INTO Mail VALUES (8010,330002, 902, CAST('14-July-2016' AS DATE), CAST('17-July-2016' AS DATE));
+INSERT INTO Mail VALUES(8020,330001, 901, CAST('20-July-2016' AS DATE), CAST('23-July-2016' AS DATE));
+INSERT INTO Mail VALUES(8030,330002, 902, CAST('13-July-2016' AS DATE), CAST('16-July-2016' AS DATE));
+INSERT INTO Mail VALUES(8040,330003, 903, CAST('2-July-2016' AS DATE), CAST('5-July-2016' AS DATE));
+INSERT INTO Mail VALUES(8050,330004, 904, CAST('19-July-2016' AS DATE), CAST('22-July-2016' AS DATE));
+INSERT INTO Mail VALUES(8060,330005, 905, CAST('12-July-2016' AS DATE), CAST('15-July-2016' AS DATE));
+INSERT INTO Mail VALUES(8070,330006, 906, CAST('1-July-2016' AS DATE), CAST('4-July-2016' AS DATE));
+INSERT INTO Mail VALUES(8080,330007, 907, CAST('27-July-2016' AS DATE),CAST('30-July-2016' AS DATE));
+
+
+USE CASES FOR THE PROJECT
+
+--USE CASE 1:
+
+SELECT Movie.movie_id, Movie.director_id, Director.director_name, Movie.movie_name 
+FROM Movie
+Join Director on Movie.director_id = Director.director_id
+WHERE director_name = 'George Lucas' or director_name = 'Rich Christiano';
+
+
+--USE CASE 2:
+
+SELECT Customer.customer_id, Customer.customer_Fname, Customer.customer_Lname, Membership.plan_name 
+FROM Customer
+JOIN membership on customer.membership_id = membership.membership_id
+WHERE mem_status = 'active';
+
+--USE CASE 3
+-- parameterized stored procedure to insert values
+
+-- please verify if there is any value for queue_id 908 by the ff query:
+--        SELECT * FROM Queue  WHERE queue_id = 908;
+
+CREATE PROCEDURE ADD_NEXT_QUEUE
+
+@queue_id_arg DECIMAL,
+@customer_id_arg DECIMAL,
+@movie_id_arg DECIMAL
+
+AS
+BEGIN
+
+  INSERT INTO Queue (queue_id, customer_id, movie_id)
+  VALUES (@queue_id_arg, @customer_id_arg, @movie_id_arg); 
+
+END;
+
+
+-- Executing the stored procedure ADD_NEXT_QUEUE
+-- invoking the stored procedure for customer 330008
+
+EXECUTE ADD_NEXT_QUEUE 908,330008, 1005
+
+
+
+--USE CASE 4
+
+SELECT movie_id, movie_name 
+FROM Movie
+WHERE not exists
+	(SELECT movie_id FROM Rent_Record
+	WHERE  Rent_Record.customer_id = 330002 AND Rent_Record.movie_id = Movie.movie_id)
+ORDER BY movie_id;
+
+
+--USE CASE 5
+/* parameterized stored procedure
+please check before creating the procedure
+Pre-test : 
+SELECT  Customer.customer_id, Customer.customer_Fname, 
+Customer.customer_Lname, Customer.mem_status, Invoice.missing_movie_fee
+FROM Customer
+JOIN Invoice ON Invoice.customer_id = Customer.customer_id
+WHERE Customer.customer_id = 330006 */
+
+-- START
+
+CREATE PROCEDURE CUSTOMER_CANCELLATION_FEE
+
+@Customer_id_arg DECIMAL 
+
+AS  
+BEGIN 
+
+UPDATE Customer
+SET Customer.mem_status = 'Not Active'
+WHERE customer_id = @customer_id_arg; 
+
+UPDATE Invoice
+SET Invoice.missing_movie_fee = 25
+WHERE Invoice.customer_id = @Customer_id_arg;
+END; 
+
+
+-- -- invoking the stored procedure for customer 330006
+
+EXECUTE CUSTOMER_CANCELLATION_FEE 330006
+
+
+-- Verification
+
+SELECT  Customer.customer_id, Customer.customer_Fname, 
+Customer.customer_Lname, Customer.mem_status, Invoice.missing_movie_fee
+FROM Customer
+JOIN Invoice ON Invoice.customer_id = Customer.customer_id
+WHERE Customer.customer_id = 330006
+
+
+
+--USE CASE 6:
+
+CREATE PROCEDURE Customer_Cancels_Account
+@customer_id_arg DECIMAL
+
+AS
+
+BEGIN 
+
+UPDATE Customer 
+SET mem_status = 'Not Active' 
+WHERE customer_id = @customer_id_arg;
+
+END;
+
+
+-- Execute stored procedure
+
+EXECUTE Customer_Cancels_Account 330003
+
+--Verification
+
+SELECT  Customer.customer_id, Customer.customer_Fname, 
+Customer.customer_Lname, Customer.mem_status, Rent_Record.Rent_Rec_id, Queue.queue_id
+FROM Customer
+JOIN Rent_Record ON Rent_Record.customer_id = Customer.customer_id
+JOIN Queue ON Queue.customer_id = Customer.customer_id
+WHERE Customer.customer_id = 330003
+
+
+--USE CASE 7
+SELECT Movie.movie_id, Movie.movie_name 
+FROM 
+(SELECT movie_id, count(movie_id) AS Sold_Movie 
+FROM Rent_Record
+WHERE return_date is null
+GROUP BY movie_id)  rent 
+JOIN Movie ON Movie.movie_id = rent.movie_id
+WHERE
+(Movie.number_in_stock - Sold_Movie = 0); 
+
+
+--USE CASE 8
+
+SELECT plan_name, plan_description, COUNT(Customer.membership_id) as 'Most customer enrollees'  
+FROM Customer
+JOIN Membership ON Membership.membership_id = Customer.membership_id
+GROUP BY Customer.membership_id, Membership.plan_name, Membership.plan_description   
+HAVING COUNT (Customer.membership_id) = (SELECT MAX (cnt)   
+FROM ( SELECT membership_id, COUNT(membership_id) cnt  
+FROM Customer  
+GROUP BY membership_id) AS COUNT
+); 
+
+
+--USE CASE 9
+
+SELECT Customer.customer_id, Customer.customer_Fname, Customer.customer_Lname, Movie.movie_name, 
+COUNT(Movie.movie_id) AS 'Number of times rented' 
+FROM Customer
+JOIN Rent_Record ON Customer.customer_id = Rent_Record.customer_id
+JOIN Movie ON Rent_Record.movie_id = Movie.movie_id
+GROUP BY Customer.customer_id, Customer.customer_Fname, Customer.customer_Lname, Movie.movie_name
+HAVING count(Rent_Record.movie_id) >1; 
+
+
+--USE CASE 10.
+
+SELECT Movie.movie_name, COUNT (RM.customer_id) AS 'number of different customers that rented'
+FROM Movie,
+(SELECT Customer.customer_id, Rent_Record.movie_id, COUNT(movie_id) AS Movie
+FROM Customer, Rent_Record 
+WHERE Customer.customer_id = Rent_Record.customer_id
+GROUP BY Customer.customer_id, Rent_Record.movie_id ) RM
+WHERE RM.movie_id = Movie.movie_id
+GROUP BY Movie.movie_id, Movie.movie_name
+ORDER BY 'number of different customers that rented' desc;
+
+
+
+--INDEX CREATION
+
+-- Index 1.
+
+CREATE INDEX index_Rent_Record_customer_id
+ON Rent_Record (customer_id);
+
+
+
+--Index 2
+
+CREATE INDEX index_Membership_id_in_Customer
+ON Customer (membership_id);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
